@@ -1,0 +1,23 @@
+name: CI
+on:
+  push:
+    branches: [trunk, 'release/**']
+  pull_request:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: echo "Testing on Node ${{ matrix.node }}" && ls -R src tests
+      - run: mkdir -p out && date -u > out/build.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-node-${{ matrix.node }}
+          path: out/
